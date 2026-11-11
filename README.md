@@ -4,7 +4,15 @@ Site estatico em portugues publicado no GitHub Pages: https://lzvsrx.github.io/a
 
 `public/index.html` apresenta o projeto e incorpora, apenas depois de um clique, a demonstracao real Godot em `public/demo/`. `public/guide.html` explica a historia, as seis acoes, formacao, juramentos, controles e reconstrucao. O ensaio e temporario, nao avanca a campanha nem transfere saves. A campanha Windows continua disponivel no GitHub Releases.
 
-## Desenvolvimento
+## Comunidade e administração
+
+`public/community.html` oferece sugestões e comentários usando os tópicos públicos do repositório. O formulário prepara uma publicação; o usuário entra no GitHub e confirma o envio lá. A leitura pela API só ocorre ao clicar em carregar. Para participar é necessária uma conta GitHub; não há conta própria do site.
+
+`public/admin.html` reúne a fila e os atalhos de moderação. A página é pública e não concede privilégios: responder, classificar, encerrar e bloquear tópicos depende das permissões da conta no GitHub. Nunca coloque tokens ou senhas no frontend. A lista trata texto de usuários como texto e oferece acesso direto ao GitHub quando a API estiver indisponível.
+
+O template de contribuição está em `.github/ISSUE_TEMPLATE/`. A etiqueta `community` foi configurada no repositório público. As categorias enhancement, bug, question e accessibility podem ser ajustadas pelo administrador. A lista não depende de etiquetas para exibir as contribuições.
+
+## Desenvolvimento local
 
 Previa: `python -m http.server 8787 --bind 127.0.0.1 --directory website/public`.
 Validacao no projeto: `python website/check_site.py` e `node website/check_interactions.mjs`.
