@@ -6,6 +6,8 @@ Site estatico em portugues publicado no GitHub Pages: https://lzvsrx.github.io/a
 
 ## Comunidade e administração
 
+Atualização de 15/11/2026: o ensaio contém seis lições consultáveis durante o combate e um registro temporário das ações experimentadas. A comunidade permite expandir tópicos e ler respostas no site, com paginação e nova tentativa; a escrita continua sendo confirmada no GitHub.
+
 `public/community.html` oferece sugestões e comentários usando os tópicos públicos do repositório. O formulário prepara uma publicação; o usuário entra no GitHub e confirma o envio lá. A leitura pela API só ocorre ao clicar em carregar. Para participar é necessária uma conta GitHub; não há conta própria do site.
 
 `public/admin.html` reúne a fila e os atalhos de moderação. A página é pública e não concede privilégios: responder, classificar, encerrar e bloquear tópicos depende das permissões da conta no GitHub. Nunca coloque tokens ou senhas no frontend. A lista trata texto de usuários como texto e oferece acesso direto ao GitHub quando a API estiver indisponível.

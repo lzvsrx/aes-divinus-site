@@ -89,7 +89,7 @@ class CommunityElement extends Element {
   replaceChildren() { this.children = []; }
 }
 const communityCode = readFileSync(new URL('public/community.js', import.meta.url), 'utf8');
-function communityContext(withForm, response, fail = false) {
+function communityContext(withForm, response, fail = false, replyPages = []) {
   const nodes = new Map();
   const get = id => {
     if (id === 'feedback-form' && !withForm) return null;
@@ -111,18 +111,22 @@ function communityContext(withForm, response, fail = false) {
     window: { location: { assign(url) { navigated = url; } } }, URL, AbortController, setTimeout, clearTimeout,
     fetch: async (url, options) => {
       requests++;
-      assert.match(url, /^https:\/\/api.github.com\/repos\/lzvsrx\/aes-divinus-site\/issues\?/);
+      assert.match(url, /^https:\/\/api.github.com\/repos\/lzvsrx\/aes-divinus-site\/issues(?:\?|\/\d+\/comments\?)/);
       assert.equal(options.credentials, 'omit');
       assert.equal(options.headers.Authorization, undefined);
       assert.equal(options.method, undefined);
       if (fail) throw new Error('offline');
+      if (url.includes('/comments?')) return replyPages.shift() || { ok: true, json: async () => [] };
       return response;
     }
   });
   return { get, requests: () => requests, navigated: () => navigated };
 }
 const payload = [{ number: 7, title: '<img src=x onerror=alert(1)>', body: '<script>bad()</script>', html_url: 'javascript:bad()', state: 'open', comments: 2, user: { login: 'player' } }, { number: 8, pull_request: {}, title: 'Not feedback' }, null];
-const community = communityContext(true, { ok: true, json: async () => payload });
+const replyPayload = Array.from({ length: 30 }, (_, index) => ({ id: index + 1, body: '<script>reply()</script>', user: { login: '<img src=x>' } }));
+const community = communityContext(true, { ok: true, json: async () => payload }, false, [
+  { ok: true, json: async () => replyPayload }, { ok: true, json: async () => [] }
+]);
 assert.equal(community.requests(), 0);
 community.get('feedback-form').events.submit({ preventDefault() {} });
 const draft = new URL(community.navigated());
@@ -145,6 +149,38 @@ assert.equal(card.children[0].children[0].textContent, '#7 · <img src=x onerror
 assert.equal(card.children[0].children[0].href, 'https://github.com/lzvsrx/aes-divinus-site/issues/7');
 assert.equal(card.children[2].textContent, '<script>bad()</script>');
 assert.equal(card.children[2].innerHTML, undefined);
+assert.equal(community.requests(), 1);
+const toggleReplies = card.children[4];
+const replyArea = card.children[5];
+assert.equal(replyArea.hidden, true);
+toggleReplies.click();
+await new Promise(resolve => setImmediate(resolve));
+assert.equal(community.requests(), 2);
+assert.equal(replyArea.hidden, false);
+assert.equal(toggleReplies.attributes['aria-expanded'], 'true');
+assert.equal(replyArea.children[2].children.length, 30);
+const reply = replyArea.children[2].children[0];
+assert.equal(reply.children[0].textContent, '<img src=x>');
+assert.equal(reply.children[1].textContent, '<script>reply()</script>');
+assert.equal(reply.children[1].innerHTML, undefined);
+toggleReplies.click();
+toggleReplies.click();
+assert.equal(community.requests(), 2, 'reopening already loaded replies does not refetch');
+replyArea.children[3].click();
+await new Promise(resolve => setImmediate(resolve));
+assert.equal(replyArea.children[3].hidden, true, 'pagination ends when the next page is empty');
+const replyError = communityContext(false, { ok: true, json: async () => payload }, false, [
+  { ok: false, status: 403 }, { ok: true, json: async () => [] }
+]);
+replyError.get('load-topics').click();
+await new Promise(resolve => setImmediate(resolve));
+replyError.get('topics-list').children[0].children[4].click();
+await new Promise(resolve => setImmediate(resolve));
+const failedArea = replyError.get('topics-list').children[0].children[5];
+assert.match(failedArea.children[1].textContent, /Não foi possível/);
+failedArea.children[3].click();
+await new Promise(resolve => setImmediate(resolve));
+assert.match(failedArea.children[1].textContent, /Ainda não/);
 for (const [response, fail, expected] of [
   [{ ok: true, json: async () => [] }, false, /Nenhum tópico/],
   [{ ok: false, status: 403 }, false, /limitou/],
@@ -158,3 +194,4 @@ for (const [response, fail, expected] of [
   assert.equal(admin.get('load-topics').disabled, false);
 }
 console.log('Community checks passed: draft validation, URL encoding/length, lazy public reads, safe text rendering, PR exclusion, empty/rate-limit/offline states and admin read-only shell.');
+console.log('Inline replies passed: explicit loading, safe author/body text, collapse/reopen cache, pagination and retry.');

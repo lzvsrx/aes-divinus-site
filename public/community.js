@@ -33,10 +33,84 @@
   const status = document.getElementById('topics-status');
   const more = document.getElementById('more-topics');
   let busy = false;
+  function addConversation(card, item) {
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'button';
+    toggle.textContent = 'Ler tópico e respostas aqui';
+    toggle.setAttribute('aria-expanded', 'false');
+    const area = document.createElement('section');
+    area.id = `replies-${item.number}`;
+    area.className = 'topic-replies';
+    area.hidden = true;
+    toggle.setAttribute('aria-controls', area.id);
+    const original = document.createElement('p');
+    original.textContent = String(item.body || 'Sem descrição.').slice(0, 16000);
+    const replyStatus = document.createElement('p');
+    replyStatus.setAttribute('role', 'status');
+    replyStatus.setAttribute('aria-live', 'polite');
+    const replies = document.createElement('div');
+    const next = document.createElement('button');
+    next.type = 'button';
+    next.className = 'button';
+    next.textContent = 'Carregar respostas';
+    area.append(original, replyStatus, replies, next);
+    let loading = false;
+    let loaded = false;
+    let page = 1;
+    async function read() {
+      if (loading) return;
+      loading = true;
+      next.disabled = true;
+      replyStatus.textContent = 'Consultando respostas públicas no GitHub…';
+      const timeout = new AbortController();
+      const timer = setTimeout(() => timeout.abort(), 15000);
+      try {
+        const response = await fetch(`https://api.github.com/repos/lzvsrx/aes-divinus-site/issues/${item.number}/comments?per_page=30&page=${page}`, {
+          headers: { Accept: 'application/vnd.github+json' }, credentials: 'omit', referrerPolicy: 'no-referrer', signal: timeout.signal
+        });
+        if (!response.ok) throw new Error('unavailable');
+        const data = await response.json();
+        if (!Array.isArray(data)) throw new Error('invalid');
+        for (const comment of data.slice(0, 30)) {
+          if (!comment || !Number.isSafeInteger(comment.id) || comment.id <= 0) continue;
+          const reply = document.createElement('article');
+          const author = document.createElement('h4');
+          author.textContent = String(comment.user?.login || 'Participante').slice(0, 60);
+          const body = document.createElement('p');
+          body.textContent = String(comment.body || 'Sem texto.').slice(0, 16000);
+          reply.append(author, body);
+          replies.appendChild(reply);
+        }
+        loaded = true;
+        page += 1;
+        next.hidden = data.length < 30;
+        next.textContent = 'Carregar mais respostas';
+        replyStatus.textContent = replies.children.length ? `${replies.children.length} resposta(s) carregada(s). Textos longos podem estar resumidos; a conversa completa está no GitHub.` : 'Ainda não há respostas. Use o link do tópico para participar.';
+      } catch {
+        replyStatus.textContent = 'Não foi possível carregar as respostas. Tente novamente ou abra a conversa no GitHub.';
+        next.textContent = 'Tentar novamente';
+        next.hidden = false;
+      } finally {
+        clearTimeout(timer);
+        next.disabled = false;
+        loading = false;
+      }
+    }
+    toggle.addEventListener('click', () => {
+      area.hidden = !area.hidden;
+      toggle.setAttribute('aria-expanded', String(!area.hidden));
+      toggle.textContent = area.hidden ? 'Ler tópico e respostas aqui' : 'Recolher conversa';
+      if (!area.hidden && !loaded) read();
+    });
+    next.addEventListener('click', read);
+    card.append(toggle, area);
+  }
   async function load() {
     if (busy) return;
     busy = true;
     button.disabled = true;
+    filter.disabled = true;
     list.replaceChildren();
     status.textContent = 'Consultando as conversas públicas…';
     const state = ['open', 'closed', 'all'].includes(filter.value) ? filter.value : 'open';
@@ -69,6 +143,7 @@
         action.href = link.href;
         action.textContent = 'Ler respostas e comentar no GitHub →';
         card.append(heading, meta, excerpt, action);
+        addConversation(card, item);
         list.appendChild(card);
       }
       status.textContent = topics.length ? `${topics.length} tópico(s) nesta consulta. A lista mostra até 30 publicações recentes; a fila completa está no GitHub.` : 'Nenhum tópico nesta situação. Sua contribuição pode começar a conversa.';
@@ -78,6 +153,7 @@
       clearTimeout(timer);
       busy = false;
       button.disabled = false;
+      filter.disabled = false;
     }
   }
   button.addEventListener('click', load);
