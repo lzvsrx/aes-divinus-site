@@ -16,7 +16,7 @@ const lightbox = new Element({ lightbox: 'assets/battle.png', caption: 'Combate 
 const elements = new Map();
 const get = id => { if (!elements.has(id)) elements.set(id, new Element()); return elements.get(id); };
 const document = { getElementById: get, querySelectorAll: selector => ({ '[data-oath]': tabs, '[data-outcome]': outcomes, '[data-lightbox]': [lightbox], '[data-version]': [get('version')] })[selector] ?? [] };
-const release = { version: '0.11.0', sha256: 'a'.repeat(64), bytes: 40000000, download_url: 'https://github.com/lzvsrx/aes-divinus-site/releases/download/v0.11.0/AesDivinus_Windows_0.11.zip' };
+const release = { version: '0.12.0', sha256: 'a'.repeat(64), bytes: 40000000, download_url: 'https://github.com/lzvsrx/aes-divinus-site/releases/download/v0.12.0/AesDivinus_Windows_0.12.zip' };
 runInNewContext(readFileSync(new URL('public/app.js', import.meta.url), 'utf8'), { document, URL, fetch: async () => ({ ok: true, json: async () => release }) });
 tabs[1].click();
 assert.match(get('oath-title').textContent, /duas vozes/);
