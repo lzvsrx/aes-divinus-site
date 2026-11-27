@@ -6,8 +6,8 @@
   "executable": "game",
   "experimentalVK": false,
   "fileSizes": {
-    "game.pck": 1631140,
-    "game.wasm": 37700666
+    "game.pck": 1704432,
+    "game.wasm": 39514754
   },
   "focusCanvas": true,
   "gdextensionLibs": [],
