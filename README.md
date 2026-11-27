@@ -2,6 +2,16 @@
 
 Site estatico em portugues publicado no GitHub Pages: https://lzvsrx.github.io/aes-divinus-site/
 
+Atualização distribuída: **0.14.0**, publicada em 27/11/2026. O pacote Windows e
+seu SHA-256 estão em [GitHub Releases](https://github.com/lzvsrx/aes-divinus-site/releases/tag/v0.14.0).
+O guia inclui armas Aes individuais, cenas com vozes gravadas, encenação 3D
+opcional, leitura simples e reprodução sequencial. A demonstração continua
+separada da campanha Windows e carrega somente após a ação do visitante.
+
+Publicação e validação visual são verificações distintas: CI, implantação e
+arquivos HTTP foram conferidos; a sessão visual em navegador real ainda não foi
+concluída neste ambiente. As limitações constam das notas da versão.
+
 `public/index.html` apresenta o projeto e incorpora, apenas depois de um clique, a demonstracao real Godot em `public/demo/`. `public/guide.html` explica a historia, as seis acoes, formacao, juramentos, controles e reconstrucao. O ensaio e temporario, nao avanca a campanha nem transfere saves. A campanha Windows continua disponivel no GitHub Releases.
 
 ## Comunidade e administração
@@ -20,7 +30,7 @@ Previa: `python -m http.server 8787 --bind 127.0.0.1 --directory website/public`
 Validacao no projeto: `python website/check_site.py` e `node website/check_interactions.mjs`.
 No checkout publico, execute `python check_site.py` e `node check_interactions.mjs`.
 
-Para reconstruir o jogo web no projeto privado Windows: `python tools/setup_godot.py` e `python tools/export_web.py`. O preset Web Demo usa Godot 4.6.3, Compatibility, sem threads e sem extensoes nativas; a feature web_demo seleciona uma cena propria e desativa persistencia antes de ler o banco. O shell externo tem CSP com wasm-unsafe-eval para compilar WebAssembly, sem liberar eval JavaScript. O Windows mantem seu fluxo original e SQLite. O navegador precisa de WebGL 2 e WebAssembly; desempenho e audio dependem do dispositivo. Nao usa service worker, conta, analytics ou servidor de jogo.
+Para reconstruir o jogo web no projeto privado Windows: `python tools/setup_godot.py` e `python tools/export_web.py`. O preset Web Demo usa Godot 4.7.2, Compatibility, sem threads e sem extensoes nativas; a feature web_demo seleciona uma cena propria e desativa persistencia antes de ler o banco. O shell externo tem CSP com wasm-unsafe-eval para compilar WebAssembly, sem liberar eval JavaScript. O Windows mantem seu fluxo original e SQLite. O navegador precisa de WebGL 2 e WebAssembly; desempenho e audio dependem do dispositivo. Nao usa service worker, conta, analytics ou servidor de jogo.
 
 O pacote de execucao PCK inclui conteudo e bytecode distribuiveis do jogo. Ele nao deve ser tratado como segredo. O repositorio-fonte e os PDFs originais permanecem privados. O script tools/stage_website.py copia somente uma lista explicita de arquivos publicos para build/site-public. Revise a diferenca antes do push. Nunca copie credenciais, bancos de usuario ou PDFs originais.
 
