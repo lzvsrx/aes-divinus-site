@@ -2,9 +2,9 @@
 
 Site estatico em portugues publicado no GitHub Pages: https://lzvsrx.github.io/aes-divinus-site/
 
-Atualização distribuída: **0.14.0**, publicada em 27/11/2026. O pacote Windows e
-seu SHA-256 estão em [GitHub Releases](https://github.com/lzvsrx/aes-divinus-site/releases/tag/v0.14.0).
-O guia inclui armas Aes individuais, cenas com vozes gravadas, encenação 3D
+Atualização distribuída: **0.15.0**, publicada em 27/11/2026. O pacote Windows e
+seu SHA-256 estão em [GitHub Releases](https://github.com/lzvsrx/aes-divinus-site/releases/tag/v0.15.0).
+O guia inclui taverna com convidados, vínculos, excessos e recuperação, além de armas Aes individuais, cenas com vozes gravadas e encenação 3D
 opcional, leitura simples e reprodução sequencial. A demonstração continua
 separada da campanha Windows e carrega somente após a ação do visitante.
 
