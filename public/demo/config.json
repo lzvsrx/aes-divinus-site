@@ -6,7 +6,7 @@
   "executable": "game",
   "experimentalVK": false,
   "fileSizes": {
-    "game.pck": 1711844,
+    "game.pck": 1720808,
     "game.wasm": 39514754
   },
   "focusCanvas": true,
